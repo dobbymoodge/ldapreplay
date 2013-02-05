@@ -43,14 +43,16 @@ class LdapReplay::Parsers::OpenLDAP
     @log.each_line do |line|
       next unless line.include?(CONN)
       # Skip "RESULT" lines - include operation results in future?
-      next if line.include?('RESULT')
+      # next if line.include?('RESULT')
 
       current_time = DateTime.parse( line[0,15] ).strftime('%s').to_i
 
       @start_time ||= current_time
 
       toks = line.split(' ')[5..-1]
-
+      if toks[2..3].include? 'RESULT'
+        toks = toks[0..1] << 'RESULT'
+      end
       yield parse_line(*toks.insert(0,(@offset + (current_time - @start_time))))
       
     end

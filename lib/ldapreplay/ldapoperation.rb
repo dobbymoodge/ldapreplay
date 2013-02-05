@@ -1,3 +1,5 @@
+require 'ldapreplay'
+
 class LdapReplay::LdapOperation
 
   def initialize *args
@@ -19,6 +21,18 @@ class LdapReplay::LdapOperation
   end
 
   def to_s
-    "LdapOperation { @op_time: " + @op_time.to_s + ", @op_conn: " + @op_conn + ", @op_id: " + @op_id + ", @op_type: " + @op_type + ", @op_args: " + @op_args.to_s + " }"
+    oa = @op_args ? @op_args.to_s : 'nil'
+    "LdapReplay::LdapOperation[{ :op_time => " + @op_time.to_s + ", :op_conn => \"" + @op_conn + "\", :op_id => \"" + @op_id + "\", :op_type => \"" + @op_type + "\", :op_args => " + oa + " }]"
   end      
+end
+
+class LdapReplay
+  def LdapOperation.[] (min_arg, *args)
+    unless min_arg.is_a? Hash
+      LdapOperation.new(min_arg, *args)
+    else
+      LdapOperation.new(*[:op_time, :op_conn, :op_id, :op_type, :op_args].map {
+                          |kk| min_arg.fetch kk })
+    end
+  end
 end
