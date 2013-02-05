@@ -1,0 +1,3 @@
+class LdapReplay
+
+end
