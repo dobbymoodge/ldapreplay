@@ -1,12 +1,12 @@
 #!/usr/bin/ruby -I ./lib
 
-require 'logfileparser'
+require 'ldapreplay/parsers/openldap'
 
-parser = LdapReplay::LogfileParser.new( *ARGV )
+parser = LdapReplay::Parsers::OpenLDAP.new( *ARGV )
 
 parser.emit { |l|
   begin
-    puts l.join(' ')
+    puts "[#{l.join('] [')}]"
   rescue Errno::EPIPE
     break
   end
