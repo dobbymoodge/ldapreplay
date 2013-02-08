@@ -14,8 +14,19 @@ class LdapReplay::Parsers::OpenLDAP
 
   end
   
+  # def parse_arg oparg
+  #   oparg.split('=', 2).inject{|ii,jj| [ii.to_sym, jj.dchomp('"')]}
+  # end
+
   def parse_arg oparg
-    oparg.split('=', 2).inject{|ii,jj| [ii.to_sym, jj.dchomp('"')]}
+    # oparg.split('=', 2).inject{|ii,jj| [ii.to_sym, jj.dchomp('"')]}
+    # puts "oparg: #{oparg}"
+    mm = /([^=]+)="?([^"]*)"?$/.match(oparg)
+    # puts "mm: #{mm}"
+    if mm
+      # puts "mm.length: #{mm.length}"
+      mm[1..2].inject{|ii,jj| [ii.to_sym, jj]}
+    end
   end
 
   def parse_operation_args(o_args)
@@ -34,6 +45,12 @@ class LdapReplay::Parsers::OpenLDAP
       return op_signature.push parse_accept_args(op_args)
     when 'closed', 'UNBIND'
       return op_signature
+    when 'SRCH'
+      if op_args[0][0..4] == 'attr='
+        return op_signature.push({:attr => [op_args[0][5..-1], *op_args[1..-1]]})
+      else
+        return op_signature.push parse_operation_args(op_args)
+      end
     else
       return op_signature.push parse_operation_args(op_args)
     end
