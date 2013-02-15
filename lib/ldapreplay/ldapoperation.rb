@@ -2,6 +2,8 @@ require 'ldapreplay'
 
 class LdapReplay::LdapOperation
 
+  attr_accessor :op_time, :op_conn, :op_id, :op_type, :op_args
+
   def initialize *args
     # puts args[4]
     @op_time = args[0]
@@ -23,7 +25,7 @@ class LdapReplay::LdapOperation
   def to_s
     oa = @op_args ? @op_args.to_s : 'nil'
     "LdapReplay::LdapOperation[{ :op_time => " + @op_time.to_s + ", :op_conn => \"" + @op_conn + "\", :op_id => \"" + @op_id + "\", :op_type => \"" + @op_type + "\", :op_args => " + oa + " }]"
-  end      
+  end
 end
 
 class LdapReplay
