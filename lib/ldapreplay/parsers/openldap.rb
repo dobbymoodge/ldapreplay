@@ -35,7 +35,8 @@ class LdapReplay::Parsers::OpenLDAP
 
   def parse_accept_args(a_args)
     # Hash[[:from_ip, :from_port].zip(a_args[1][3..-1].split(':')).concat([:to_ip, :to_port].zip(a_args[2][4..-2].split(':')))]
-    Hash[[:from_ip, :from_port, :to_ip, :to_port].zip(a_args[1][3..-1].split(':').concat a_args[2][4..-2].split(':'))]
+    # Hash[[:from_ip, :from_port, :to_ip, :to_port].zip(a_args[1][3..-1].split(':').concat a_args[2][4..-2].split(':'))]
+    (a_args[1][3..-1].split(':').concat a_args[2][4..-2].split(':'))
   end
 
   def parse_line(op_time, op_conn, op_id, op_type, *op_args)

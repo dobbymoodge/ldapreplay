@@ -18,7 +18,7 @@ parser.emit { |args|
     # puts "args: #{args.join(' ')}"
     case op_type
     when 'ACCEPT'
-      nc = LdapReplay::LdapConnection.new( op_args[:from_ip], op_args[:from_port], op_args[:to_ip], op_args[:to_port] )
+      nc = LdapReplay::LdapConnection.new( *op_args )
       nc.id = (conn_ary.push(nc).size) - 1
       conn_hsh[op_conn] = nc.id
     when 'closed'
@@ -38,12 +38,13 @@ parser.emit { |args|
 }
 
 
-puts "--------------------"
-puts "conn_hsh: %s" % conn_hsh.pretty_inspect
-puts "===================="
-puts "conn_ary: %s" % conn_ary.pretty_inspect
+# puts "--------------------"
+# puts "conn_hsh: %s" % conn_hsh.pretty_inspect
+# puts "===================="
+# puts "conn_ary: %s" % conn_ary.pretty_inspect
 # puts "conn_ary: #{conn_ary}"
-puts "^^^^^^^^^^^^^^^^^^^^"
+# puts "^^^^^^^^^^^^^^^^^^^^"
 
 # puts YAML.dump conn_ary
-puts "op_hsh: %s" % op_hsh.pretty_inspect
+# puts "op_hsh: %s" % op_hsh.pretty_inspect
+puts YAML.dump [conn_ary, op_hsh]
