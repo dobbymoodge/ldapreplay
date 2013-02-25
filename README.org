@@ -1,0 +1,22 @@
+* LdapReplay
+A tool/library to assist in parsing LDAP server logs and replaying
+LDAP transactions.
+
+** Log Parsing
+Currently the tool only parses OpenLDAP ldap.log-style logs. The
+intent is for parsed logs to be stored in a generic internal data
+structure which can then be written out to disk or traversed for
+playback.
+
+** Usage: 
+#+begin_src
+ruby -I./lib parseops3.rb ../ldap.log
+#+end_src
+
+** TODO create class to replay LDAP transactions
+
+** TODO allow parameterized playback
+- allow scaling factor to speed up or slow down playback relative to recorded timing, or to play back as rapidly as possible
+- allow matching to constrain playback to only operations which match
+
+** TODO add methods for querying parsed LDAP records for transactions/operations matching particular criteria
