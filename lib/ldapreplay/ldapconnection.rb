@@ -12,7 +12,7 @@ class LdapReplay::LdapConnection
     @op_ary    = []
     @op_hsh    = {}
     @ldap_conn = nil
-    @deref     = nil
+    @deref     = '0'
   end
 
   def add_op op_time, op_conn, op_id, op_type, *op_args
@@ -25,8 +25,10 @@ class LdapReplay::LdapConnection
     else
       @op_hsh[op_id].add_args(*op_args)
     end
-    puts op_time, op_conn, op_id, op_type, op_args
-    @deref = @op_hsh[op_id].op_args.fetch( :deref, @deref )
+    # puts op_time, op_conn, op_id, op_type, op_args
+    if @op_hsh[op_id].op_args
+      @deref = @op_hsh[op_id].op_args.fetch( :deref, @deref )
+    end
     return new_op
   end
 end

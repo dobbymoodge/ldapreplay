@@ -1,11 +1,8 @@
 require 'ldapreplay/parsers'
 
 class LdapReplay::Parsers::OpenLDAP
-  require 'ldapreplay/monkey_patches'
   require 'time'
 
-  CONN = 'conn='
-  
   def initialize path, offset = 0
     raise ArgumentError unless File.exists?( path )
     
@@ -14,17 +11,9 @@ class LdapReplay::Parsers::OpenLDAP
 
   end
   
-  # def parse_arg oparg
-  #   oparg.split('=', 2).inject{|ii,jj| [ii.to_sym, jj.dchomp('"')]}
-  # end
-
   def parse_arg oparg
-    # oparg.split('=', 2).inject{|ii,jj| [ii.to_sym, jj.dchomp('"')]}
-    # puts "oparg: #{oparg}"
     mm = /([^=]+)="?([^"]*)"?$/.match(oparg)
-    # puts "mm: #{mm}"
     if mm
-      # puts "mm.length: #{mm.length}"
       mm[1..2].inject{|ii,jj| [ii.to_sym, jj]}
     end
   end
@@ -34,10 +23,23 @@ class LdapReplay::Parsers::OpenLDAP
   end
 
   def parse_accept_args(a_args)
-    # Hash[[:from_ip, :from_port].zip(a_args[1][3..-1].split(':')).concat([:to_ip, :to_port].zip(a_args[2][4..-2].split(':')))]
-    # Hash[[:from_ip, :from_port, :to_ip, :to_port].zip(a_args[1][3..-1].split(':').concat a_args[2][4..-2].split(':'))]
     (a_args[1][3..-1].split(':').concat a_args[2][4..-2].split(':'))
   end
+
+  # For "ACCEPT" lines, generates an array containing the connection
+  # details; this signifies a new connection
+  #
+  # For "closed" and "UNBIND" lines, no additional parameters are
+  # returned; this signifies that a connection is being closed, and
+  # thus should have no more operations associated with it
+  #
+  # For "SRCH" lines, the arguments are parsed differently than for
+  # other operations, to account for the presence of the "attr="
+  # argument, which takes multiple parameters
+  #
+  # For other operation lines, arguments are parsed into a hash, with
+  # the argument type expressed as a :symbol, and the parameter as a
+  # string
 
   def parse_line(op_time, op_conn, op_id, op_type, *op_args)
     op_signature = [op_time, op_conn, op_id, op_type]
@@ -59,9 +61,7 @@ class LdapReplay::Parsers::OpenLDAP
 
   def emit &block
     @log.each_line do |line|
-      next unless line.include?(CONN)
-      # Skip "RESULT" lines - include operation results in future?
-      # next if line.include?('RESULT')
+      next unless line.include?('conn=')
 
       current_time = DateTime.parse( line[0,15] ).strftime('%s').to_i
 

@@ -14,11 +14,8 @@ class LdapReplay::LdapOperation
   end
 
   def add_args op_args
-    # puts "1, #{op_args}, #{@op_args}"
     if op_args
-      # puts 2
       @op_args.merge! op_args
-      # puts "3, #{op_args}, #{@op_args}"
     end
   end
 
